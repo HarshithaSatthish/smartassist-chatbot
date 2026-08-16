@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { login, register } from "../services/chatbotApi.js";
+import { CONNECT_ERROR, login, register } from "../services/chatbotApi.js";
 
 function LoginPage({ onLoggedIn }) {
   const [mode, setMode] = useState("login");
@@ -48,7 +48,7 @@ function LoginPage({ onLoggedIn }) {
           requestError.message.toLowerCase().includes("failed to fetch"));
       setError(
         isNetworkError
-          ? "Unable to connect to SmartAssist. Please check whether the backend server is running."
+          ? CONNECT_ERROR
           : requestError.message || "Something went wrong. Please try again."
       );
       flashInvalid({ username: false, password: false });

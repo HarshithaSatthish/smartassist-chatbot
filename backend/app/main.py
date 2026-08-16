@@ -1,10 +1,11 @@
 import logging
 import os
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -35,10 +36,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+VERCEL_ORIGIN_REGEX = r"https://([a-z0-9-]+\.)*vercel\.app"
+
+
 def get_cors_origins():
     origins = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://smartassist-chatbot.vercel.app",
     ]
     extra = os.getenv("CORS_ORIGINS", "")
     for item in extra.split(","):
@@ -96,10 +101,20 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_cors_origins(),
+    allow_origin_regex=VERCEL_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def normalize_duplicate_slashes(request: Request, call_next):
+    """Accept //path when VITE_API_URL was set with a trailing slash."""
+    path = request.scope.get("path") or ""
+    if "//" in path:
+        request.scope["path"] = re.sub(r"/{2,}", "/", path)
+    return await call_next(request)
 
 
 @app.exception_handler(RequestValidationError)

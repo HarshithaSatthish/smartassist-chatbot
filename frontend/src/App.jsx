@@ -6,6 +6,7 @@ import LoginPage from "./components/LoginPage.jsx";
 import ConversationList from "./components/ConversationList.jsx";
 import {
   AuthError,
+  CONNECT_ERROR,
   clearSession,
   createConversation,
   deleteConversation,
@@ -194,9 +195,8 @@ function App() {
           requestError.message.toLowerCase().includes("failed to fetch"));
 
       const displayError = isNetworkError
-        ? "Unable to connect to SmartAssist. Please check whether the backend server is running."
-        : requestError.message ||
-          "Unable to connect to SmartAssist. Please check whether the backend server is running.";
+        ? CONNECT_ERROR
+        : requestError.message || CONNECT_ERROR;
 
       setError(displayError);
       setMessages((current) => [

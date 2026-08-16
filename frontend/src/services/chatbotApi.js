@@ -1,6 +1,11 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000")
+  .trim()
+  .replace(/\/+$/, "");
 const TOKEN_KEY = "smartassist_token";
 const USERNAME_KEY = "smartassist_username";
+
+export const CONNECT_ERROR =
+  "Unable to connect to SmartAssist. Please check whether the backend server is running and that VITE_API_URL points to the live API (no trailing slash).";
 
 export class AuthError extends Error {
   constructor(message) {
@@ -59,13 +64,18 @@ async function readError(response, options = {}) {
 
 async function request(path, options = {}) {
   const { skipAuthClear = false, ...fetchOptions } = options;
-  const response = await fetch(`${API_URL}${path}`, {
-    ...fetchOptions,
-    headers: {
-      ...authHeaders(),
-      ...(fetchOptions.headers || {}),
-    },
-  });
+  let response;
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      ...fetchOptions,
+      headers: {
+        ...authHeaders(),
+        ...(fetchOptions.headers || {}),
+      },
+    });
+  } catch {
+    throw new Error(CONNECT_ERROR);
+  }
 
   if (!response.ok) {
     await readError(response, { skipAuthClear });
