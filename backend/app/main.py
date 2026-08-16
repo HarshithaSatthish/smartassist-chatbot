@@ -133,6 +133,17 @@ async def validation_exception_handler(request, exc: RequestValidationError):
     )
 
 
+@app.get("/")
+async def root():
+    return {
+        "service": "SmartAssist API",
+        "status": "ok",
+        "health": "/health",
+        "docs": "/docs",
+        "chat": "POST /chat",
+    }
+
+
 @app.get("/health", response_model=HealthResponse)
 async def health():
     return {"status": "ok", "service": "SmartAssist API"}
