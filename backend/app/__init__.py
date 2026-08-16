@@ -1,0 +1,1 @@
+# SmartAssist backend package
