@@ -586,6 +586,7 @@ Suggested GitHub repository description:
 > Internship-ready AI chatbot with React, FastAPI, login, chat history, FAQ replies, and OpenAI-compatible API fallback.
 
 Suggested topics: `react`, `fastapi`, `chatbot`, `openai`, `internship-project`
+Deployed link:https://vercel.com/harshithas-projects-270046d5/smartassist-chatbot-4s4x
 
 ---
 
